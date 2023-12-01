@@ -1,5 +1,5 @@
-CNAME = client.a
-SNAME = server.a
+CNAME = client
+SNAME = server
 
 CC = cc
 # CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address 

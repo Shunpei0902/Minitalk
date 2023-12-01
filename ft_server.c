@@ -6,11 +6,13 @@
 /*   By: sasano <shunkotkg0141@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 00:09:52 by sasano            #+#    #+#             */
-/*   Updated: 2023/12/01 10:58:05 by sasano           ###   ########.fr       */
+/*   Updated: 2023/12/01 13:38:28 by sasano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+static int	client_pid;
 
 static void	error(char *str)
 {
@@ -18,41 +20,56 @@ static void	error(char *str)
 	exit(0);
 }
 
-static int	check_utf8(char c)
+static void	ft_put_message(char c, int length)
+{
+	static char	utf8[4];
+	static int	utf8_len;
+	static int	j;
+
+	if (length == 1)
+		ft_putchar_fd(c, 1);
+	else
+	{
+		if (length != -1)
+			utf8_len = length;
+		utf8[j++] = c;
+		utf8_len--;
+		if (utf8_len == 0)
+		{
+			ft_putstr_fd(utf8, 1);
+			ft_memset(utf8, 0, sizeof(utf8));
+			j = 0;
+			utf8_len = 0;
+		}
+	}
+}
+
+static void	check_utf8(char c)
 {
 	unsigned char	byte;
+	int				length;
 
 	byte = (unsigned char)c;
 	if (byte == 0)
-		return (0);
+		length = 0;
 	else if ((byte & 0x80) == 0)
-		return (1);
+		length = 1;
 	else if ((byte & 0xE0) == 0xC0)
-		return (2);
+		length = 2;
 	else if ((byte & 0xF0) == 0xE0)
-		return (3);
+		length = 3;
 	else if ((byte & 0xF8) == 0xF0)
-		return (4);
-	return (-1);
-}
-
-static void	ft_put_utf8(char c, int length)
-{
-	static char	utf8[4];
-	static int	i;
-	static int	utf8_len;
-
-	if (length != -1)
-		utf8_len = length;
-	utf8[i++] = c;
-	utf8_len--;
-	if (utf8_len == 0)
+		length = 4;
+	else
+		length = -1;
+	if (length == 0)
 	{
-		ft_putstr_fd(utf8, 1);
-		ft_memset(utf8, 0, sizeof(utf8));
-		i = 0;
-		utf8_len = 0;
+		if (kill(client_pid, SIGUSR1) == -1)
+			error("Error: Invalid PID\n");
+		client_pid = 0;
 	}
+	else
+		ft_put_message(c, length);
 }
 
 static void	ft_server(int sig, siginfo_t *info, void *context)
@@ -60,7 +77,6 @@ static void	ft_server(int sig, siginfo_t *info, void *context)
 	static int	i;
 	static char	c;
 	static int	length;
-	static int	client_pid;
 
 	if (!client_pid)
 		client_pid = info->si_pid;
@@ -71,21 +87,7 @@ static void	ft_server(int sig, siginfo_t *info, void *context)
 	i++;
 	if (i == 8)
 	{
-		length = check_utf8(c);
-		if (length == 0)
-		{
-			ft_putchar_fd('\n', 1);
-			if (client_pid > 0)
-			{
-				if (kill(client_pid, SIGUSR1) == -1)
-					error("Error: Invalid PID\n");
-				client_pid = 0;
-			}
-		}
-		else if (length == 1)
-			ft_putchar_fd(c, 1);
-		else
-			ft_put_utf8(c, length);
+		check_utf8(c);
 		i = 0;
 		c = 0;
 	}

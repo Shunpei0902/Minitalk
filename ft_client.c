@@ -6,7 +6,7 @@
 /*   By: sasano <shunkotkg0141@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 00:09:56 by sasano            #+#    #+#             */
-/*   Updated: 2023/12/01 11:15:24 by sasano           ###   ########.fr       */
+/*   Updated: 2023/12/01 11:41:37 by sasano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,21 @@ static void	ft_reserve(int sig, siginfo_t *info, void *context)
 	{
 		printf("Success\n");
 		exit(0);
+	}
+}
+
+static void	send_null(pid_t pid)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	while (++i < 8)
+	{
+		if (kill(pid, SIGUSR1) == -1)
+			error("Error: Invalid PID\n");
+		usleep(100);
+		j = 8;
 	}
 }
 
@@ -48,19 +63,14 @@ static void	ft_client(pid_t pid, char *str)
 			usleep(100);
 		}
 	}
-	j = 8;
-	while (j--)
-	{
-		if (kill(pid, SIGUSR1) == -1)
-			error("Error: Invalid PID\n");
-		usleep(100);
-	}
+	send_null(pid);
 }
 
 int	main(int argc, char **argv)
 {
-	pid_t pid;
-	struct sigaction sa;
+	pid_t				pid;
+	struct sigaction	sa;
+
 	if (argc != 3)
 	{
 		ft_putstr_fd("Error: Invalid argument\n", 1);
