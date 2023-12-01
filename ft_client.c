@@ -6,7 +6,7 @@
 /*   By: sasano <shunkotkg0141@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 00:09:56 by sasano            #+#    #+#             */
-/*   Updated: 2023/12/01 11:41:37 by sasano           ###   ########.fr       */
+/*   Updated: 2023/12/01 13:51:34 by sasano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	main(int argc, char **argv)
 		return (0);
 	}
 	pid = (pid_t)ft_atoi(argv[1]);
-	if (pid < 0)
+	if (pid <= 0)
 	{
 		ft_putstr_fd("Error: Invalid PID\n", 1);
 		return (0);
