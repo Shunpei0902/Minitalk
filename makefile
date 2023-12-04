@@ -8,12 +8,17 @@ SSRCS = ft_server.c
 COBJS = $(CSRCS:.c=.o)
 SOBJS = $(SSRCS:.c=.o)
 
+B_CSRCS = ft_client_bonus.c
+B_SSRCS = ft_server_bonus.c
+B_COBJS = $(B_CSRCS:.c=.o)
+B_SOBJS = $(B_SSRCS:.c=.o)
+
 LIBFT_DIR = ./libft
 LIBFT_LIB = $(LIBFT_DIR)/libft.a
 
 all: $(LIBFT_LIB) $(CNAME) $(SNAME)
 
-$(CNAME): $() $(LIBFT_LIB)
+$(CNAME): $(CSRCS) $(LIBFT_LIB)
 	$(CC) $(CFLAGS) $(CSRCS) -o $(CNAME) $(LIBFT_LIB)
 
 $(SNAME): $(SSRCS) $(LIBFT_LIB)
@@ -21,6 +26,14 @@ $(SNAME): $(SSRCS) $(LIBFT_LIB)
 
 $(LIBFT_LIB):
 	@make -C $(LIBFT_DIR)
+
+$(B_CNAME): $(B_CSRCS) $(LIBFT_LIB)
+	$(CC) $(CFLAGS) $(B_COBJS) -o $(B_CNAME) $(LIBFT_LIB)
+
+$(B_SNAME): $(B_SSRCS) $(LIBFT_LIB)
+	$(CC) $(CFLAGS) $(B_SOBJS) -o $(B_SNAME) $(LIBFT_LIB)
+
+bonus: $(LIBFT_LIB) $(B_CNAME) $(B_SNAME)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
