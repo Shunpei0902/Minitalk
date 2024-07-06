@@ -6,7 +6,7 @@
 /*   By: sasano <shunkotkg0141@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 00:09:52 by sasano            #+#    #+#             */
-/*   Updated: 2023/12/05 00:37:52 by sasano           ###   ########.fr       */
+/*   Updated: 2024/07/06 16:30:07 by sasano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ static void	ft_server(int sig, siginfo_t *info, void *context)
 	static int	i;
 	static int	client_pid;
 
+	(void)context;
 	if (!client_pid)
 		client_pid = info->si_pid;
 	if (sig == SIGUSR2)

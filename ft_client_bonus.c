@@ -6,7 +6,7 @@
 /*   By: sasano <shunkotkg0141@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 00:09:56 by sasano            #+#    #+#             */
-/*   Updated: 2023/12/05 00:38:14 by sasano           ###   ########.fr       */
+/*   Updated: 2024/07/06 16:30:29 by sasano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static void	error(char *str)
 
 static void	ft_reserve(int sig, siginfo_t *info, void *context)
 {
+	(void)info;
+	(void)context;
 	if (sig == SIGUSR1)
 	{
 		printf("Success\n");
@@ -30,7 +32,6 @@ static void	ft_reserve(int sig, siginfo_t *info, void *context)
 static void	send_null(pid_t pid)
 {
 	int	i;
-	int	j;
 
 	i = -1;
 	while (++i < 8)
@@ -38,7 +39,6 @@ static void	send_null(pid_t pid)
 		if (kill(pid, SIGUSR1) == -1)
 			error("Error: Invalid PID\n");
 		usleep(100);
-		j = 8;
 	}
 }
 

@@ -2,16 +2,19 @@ CNAME = client
 SNAME = server
 
 CC = cc
-# CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address 
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address 
 CSRCS = ft_client.c
 SSRCS = ft_server.c
-COBJS = $(CSRCS:.c=.o)
-SOBJS = $(SSRCS:.c=.o)
+# COBJS = $(CSRCS:.c=.o)
+# SOBJS = $(SSRCS:.c=.o)
+
+B_CNAME = client_bonus
+B_SNAME = server_bonus
 
 B_CSRCS = ft_client_bonus.c
 B_SSRCS = ft_server_bonus.c
-B_COBJS = $(B_CSRCS:.c=.o)
-B_SOBJS = $(B_SSRCS:.c=.o)
+# B_COBJS = $(B_CSRCS:.c=.o)
+# B_SOBJS = $(B_SSRCS:.c=.o)
 
 LIBFT_DIR = ./libft
 LIBFT_LIB = $(LIBFT_DIR)/libft.a
@@ -28,10 +31,10 @@ $(LIBFT_LIB):
 	@make -C $(LIBFT_DIR)
 
 $(B_CNAME): $(B_CSRCS) $(LIBFT_LIB)
-	$(CC) $(CFLAGS) $(B_COBJS) -o $(B_CNAME) $(LIBFT_LIB)
+	$(CC) $(CFLAGS) $(B_CSRCS) -o $(B_CNAME) $(LIBFT_LIB)
 
 $(B_SNAME): $(B_SSRCS) $(LIBFT_LIB)
-	$(CC) $(CFLAGS) $(B_SOBJS) -o $(B_SNAME) $(LIBFT_LIB)
+	$(CC) $(CFLAGS) $(B_SSRCS) -o $(B_SNAME) $(LIBFT_LIB)
 
 bonus: $(LIBFT_LIB) $(B_CNAME) $(B_SNAME)
 
@@ -44,7 +47,7 @@ clean:
 
 fclean: clean
 	make -C $(LIBFT_DIR) fclean
-	rm -f $(CNAME) $(SNAME)
+	rm -f $(CNAME) $(SNAME) $(B_CNAME) $(B_SNAME)
 
 re: fclean all
 
