@@ -6,11 +6,13 @@
 /*   By: sasano <shunkotkg0141@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 00:09:56 by sasano            #+#    #+#             */
-/*   Updated: 2024/07/06 18:24:34 by sasano           ###   ########.fr       */
+/*   Updated: 2024/11/13 18:35:14 by sasano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+int	g_flg;
 
 static void	error(char *str)
 {
@@ -18,13 +20,17 @@ static void	error(char *str)
 	exit(0);
 }
 
-static void	ft_reserve(int sig, siginfo_t *info, void *context)
+static void	check_flg(int sig, siginfo_t *info, void *context)
 {
 	(void)info;
 	(void)context;
 	if (sig == SIGUSR1)
+		g_flg = 1;
+	else
+		g_flg = 0;
+	if (sig == SIGUSR2)
 	{
-		printf("Success\n");
+		ft_printf("Success\n");
 		exit(0);
 	}
 }
@@ -51,23 +57,28 @@ static void	ft_client(pid_t pid, char *str)
 	while (str[++i])
 	{
 		j = 8;
-		while (j-- > 0)
+		while (j > 0)
 		{
-			if (str[i] & (1 << j))
+			if (g_flg)
 			{
-				if (kill(pid, SIGUSR2) == -1)
+				g_flg = 0;
+				if (str[i] & (1 << --j))
+				{
+					if (kill(pid, SIGUSR2) == -1)
+						error("Error: Invalid PID\n");
+				}
+				else if (kill(pid, SIGUSR1) == -1)
 					error("Error: Invalid PID\n");
+				usleep(100);
 			}
-			else if (kill(pid, SIGUSR1) == -1)
-				error("Error: Invalid PID\n");
-			usleep(100);
 		}
 	}
-	send_null(pid);
+	if (g_flg)
+		send_null(pid);
 }
 
 int	main(int argc, char **argv)
-{
+{	
 	pid_t				pid;
 	struct sigaction	sa;
 
@@ -76,10 +87,12 @@ int	main(int argc, char **argv)
 	pid = (pid_t)ft_atoi(argv[1]);
 	if (pid <= 0)
 		error("Error: Invalid PID\n");
-	sa.sa_sigaction = ft_reserve;
 	sa.sa_flags = SA_SIGINFO;
-	if (sigemptyset(&sa.sa_mask) == -1 || sigaction(SIGUSR1, &sa, NULL) == -1)
+	sa.sa_sigaction = check_flg;
+	if (sigemptyset(&sa.sa_mask) == -1 || sigaction(SIGUSR1, &sa, NULL) == -1
+		|| sigaction(SIGUSR2, &sa, NULL) == -1)
 		error("Error: sigaction or sigemptyset\n");
+	g_flg = 1;
 	ft_client(pid, argv[2]);
 	while (1)
 		pause();
